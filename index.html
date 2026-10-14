@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MBTI로 포켓몬 찾기</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family:
+        "Pretendard",
+        "Noto Sans KR",
+        Arial,
+        sans-serif;
+      background: #fff8df;
+      color: #5b4526;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: min(900px, 92%);
+      margin: 0 auto;
+      padding: 55px 0;
+      text-align: center;
+    }
+
+    header {
+      margin-bottom: 35px;
+    }
+
+    .title {
+      font-size: clamp(32px, 6vw, 58px);
+      font-weight: 900;
+      color: #7a531f;
+      margin: 0 0 12px;
+    }
+
+    .subtitle {
+      font-size: clamp(16px, 3vw, 21px);
+      color: #987542;
+      margin: 0;
+    }
+
+    .card {
+      background: #fffdf3;
+      border: 3px solid #f1d27a;
+      border-radius: 30px;
+      padding: 35px;
+      box-shadow: 0 12px 30px rgba(125, 91, 31, 0.12);
+    }
+
+    .question {
+      font-size: 25px;
+      font-weight: 800;
+      margin-bottom: 25px;
+    }
+
+    .mbti-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 13px;
+    }
+
+    .mbti-button {
+      border: 2px solid #efd17c;
+      background: #fff5c9;
+      color: #65491f;
+      border-radius: 16px;
+      padding: 17px 8px;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .mbti-button:hover {
+      background: #ffe9a1;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(150, 105, 25, 0.15);
+    }
+
+    .result {
+      display: none;
+    }
+
+    .result.show {
+      display: block;
+      animation: appear 0.4s ease;
+    }
+
+    @keyframes appear {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .result-mbti {
+      display: inline-block;
+      background: #f5d36d;
+      color: #65491f;
+      padding: 9px 18px;
+      border-radius: 30px;
+      font-size: 18px;
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+
+    .pokemon-emoji {
+      font-size: 110px;
+      line-height: 1.1;
+      margin: 8px 0;
+    }
+
+    .pokemon-name {
+      font-size: clamp(32px, 7vw, 48px);
+      font-weight: 900;
+      color: #754d1d;
+      margin: 5px 0 22px;
+    }
+
+    .reason {
+      background: #fff3c4;
+      border-radius: 20px;
+      padding: 20px;
+      font-size: 19px;
+      line-height: 1.7;
+      margin-bottom: 22px;
+    }
+
+    .compatibility {
+      background: #fffaf0;
+      border: 2px solid #f0d98f;
+      border-radius: 18px;
+      padding: 18px;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    .compatibility strong {
+      color: #a66a16;
+    }
+
+    .reset-button {
+      margin-top: 25px;
+      border: none;
+      background: #dcae45;
+      color: white;
+      padding: 15px 28px;
+      border-radius: 16px;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .reset-button:hover {
+      background: #c99a31;
+      transform: translateY(-2px);
+    }
+
+    .footer {
+      margin-top: 25px;
+      font-size: 14px;
+      color: #ad9060;
+    }
+
+    @media (max-width: 650px) {
+      .container {
+        padding: 35px 0;
+      }
+
+      .card {
+        padding: 24px 18px;
+        border-radius: 24px;
+      }
+
+      .mbti-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .pokemon-emoji {
+        font-size: 90px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="container">
+
+    <header>
+      <h1 class="title">🌼 MBTI로 포켓몬 찾기</h1>
+      <p class="subtitle">나와 어울리는 포켓몬은 누구일까?</p>
+    </header>
+
+    <section class="card">
+
+      <!-- MBTI 선택 화면 -->
+      <div id="selection">
+        <div class="question">✨ 나의 MBTI를 골라주세요!</div>
+
+        <div class="mbti-grid">
+          <button class="mbti-button" onclick="showResult('ISTJ')">ISTJ</button>
+          <button class="mbti-button" onclick="showResult('ISFJ')">ISFJ</button>
+          <button class="mbti-button" onclick="showResult('INFJ')">INFJ</button>
+          <button class="mbti-button" onclick="showResult('INTJ')">INTJ</button>
+
+          <button class="mbti-button" onclick="showResult('ISTP')">ISTP</button>
+          <button class="mbti-button" onclick="showResult('ISFP')">ISFP</button>
+          <button class="mbti-button" onclick="showResult('INFP')">INFP</button>
+          <button class="mbti-button" onclick="showResult('INTP')">INTP</button>
+
+          <button class="mbti-button" onclick="showResult('ESTP')">ESTP</button>
+          <button class="mbti-button" onclick="showResult('ESFP')">ESFP</button>
+          <button class="mbti-button" onclick="showResult('ENFP')">ENFP</button>
+          <button class="mbti-button" onclick="showResult('ENTP')">ENTP</button>
+
+          <button class="mbti-button" onclick="showResult('ESTJ')">ESTJ</button>
+          <button class="mbti-button" onclick="showResult('ESFJ')">ESFJ</button>
+          <button class="mbti-button" onclick="showResult('ENFJ')">ENFJ</button>
+          <button class="mbti-button" onclick="showResult('ENTJ')">ENTJ</button>
+        </div>
+      </div>
+
+
+      <!-- 결과 화면 -->
+      <div id="result" class="result">
+
+        <div id="resultMbti" class="result-mbti"></div>
+
+        <div id="pokemonEmoji" class="pokemon-emoji"></div>
+
+        <div id="pokemonName" class="pokemon-name"></div>
+
+        <div id="reason" class="reason"></div>
+
+        <div class="compatibility">
+          💛 <strong>잘 맞는 MBTI</strong><br>
+          <span id="compatibility"></span>
+        </div>
+
+        <button class="reset-button" onclick="resetPage()">
+          ↩ 다시 고르기
+        </button>
+
+      </div>
+
+    </section>
+
+    <div class="footer">
+      ※ 포켓몬과 MBTI의 조합은 재미를 위한 콘텐츠입니다!
+    </div>
+
+  </main>
+
+
+  <script>
+
+    const pokemonData = {
+
+      ISTJ: {
+        pokemon: "🦉",
+        name: "부엉이 포켓몬",
+        reason: "차분하고 책임감이 강한 ISTJ에게는 신중하고 관찰력이 좋은 포켓몬이 잘 어울려요.<br>맡은 일을 꾸준히 해내는 모습도 ISTJ와 닮았답니다.",
+        compatibility: "ESFP — 서로 다른 장점을 자연스럽게 채워주는 조합!"
+      },
+
+      ISFJ: {
+        pokemon: "🐢",
+        name: "거북왕",
+        reason: "ISFJ는 주변 사람을 세심하게 챙기고 안정적인 분위기를 좋아하는 편이에요.<br>든든하고 믿음직한 거북왕의 이미지와 잘 어울려요.",
+        compatibility: "ESFP — 따뜻함과 활발함이 만나 좋은 균형을 만들어요."
+      },
+
+      INFJ: {
+        pokemon: "🌙",
+        name: "루나아라",
+        reason: "깊은 생각과 풍부한 상상력을 가진 INFJ에게 신비로운 루나아라가 잘 어울려요.<br>조용하지만 자신만의 확실한 세계를 가진 점도 닮았어요.",
+        compatibility: "ENFP — 서로의 생각과 감성을 풍성하게 만들어주는 조합!"
+      },
+
+      INTJ: {
+        pokemon: "🧠",
+        name: "메타그로스",
+        reason: "전략적으로 생각하고 목표를 향해 계획적으로 움직이는 INTJ와 잘 어울려요.<br>뛰어난 판단력과 냉철함을 가진 모습이 INTJ와 닮았답니다.",
+        compatibility: "ENFP — 계획적인 사람과 자유로운 아이디어가 만나 시너지를 내요."
+      },
+
+      ISTP: {
+        pokemon: "🦂",
+        name: "핫삼",
+        reason: "ISTP는 직접 경험하면서 문제를 해결하는 능력이 뛰어난 편이에요.<br>빠른 판단력과 실전적인 행동력을 가진 포켓몬과 잘 어울려요.",
+        compatibility: "ESFJ — 서로 다른 방식으로 부족한 부분을 채워줘요."
+      },
+
+      ISFP: {
+        pokemon: "🦋",
+        name: "버터플",
+        reason: "감각적이고 자유로운 ISFP에게 부드럽고 아름다운 버터플이 잘 어울려요.<br>자신만의 감성과 편안한 분위기를 중요하게 생각하는 점도 닮았어요.",
+        compatibility: "ENFJ — 서로의 감성과 따뜻함을 잘 이해해주는 조합!"
+      },
+
+      INFP: {
+        pokemon: "🌸",
+        name: "세레비",
+        reason: "상상력이 풍부하고 따뜻한 마음을 가진 INFP에게 세레비가 잘 어울려요.<br>순수하고 평화로운 분위기와 자신만의 이상을 소중히 여기는 모습이 닮았어요.",
+        compatibility: "ENFJ — 서로의 마음을 이해하고 응원해주는 조합!"
+      },
+
+      INTP: {
+        pokemon: "🧩",
+        name: "후딘",
+        reason: "호기심이 많고 새로운 원리를 탐구하는 INTP와 후딘이 잘 어울려요.<br>논리적으로 생각하고 복잡한 문제를 분석하는 모습이 닮았답니다.",
+        compatibility: "ENTJ — 아이디어와 실행력이 만나 좋은 결과를 만들어요."
+      },
+
+      ESTP: {
+        pokemon: "⚡",
+        name: "제라오라",
+        reason: "빠르게 움직이고 새로운 경험을 즐기는 ESTP에게 제라오라가 딱 어울려요.<br>순발력과 행동력이 뛰어나고 가만히 있기보다 직접 움직이는 타입이에요.",
+        compatibility: "ISFJ — 서로 다른 성향이 균형을 만들어줘요."
+      },
+
+      ESFP: {
+        pokemon: "🎉",
+        name: "피카츄",
+        reason: "밝고 활발하며 사람들과 함께하는 것을 좋아하는 ESFP에게 피카츄가 잘 어울려요.<br>주변 분위기를 즐겁게 만드는 사랑스러운 에너지가 닮았어요.",
+        compatibility: "ISTJ — 활발함과 안정감이 서로를 보완해줘요."
+      },
+
+      ENFP: {
+        pokemon: "🌈",
+        name: "이브이",
+        reason: "무한한 가능성을 가지고 새로운 것을 좋아하는 ENFP에게 이브이가 잘 어울려요.<br>상황에 따라 다양한 모습으로 성장할 수 있다는 점도 닮았어요.",
+        compatibility: "INFJ — 아이디어와 깊은 생각이 만나 특별한 관계가 될 수 있어요."
+      },
+
+      ENTP: {
+        pokemon: "🔥",
+        name: "리자몽",
+        reason: "새로운 아이디어를 좋아하고 도전적인 ENTP에게 리자몽이 잘 어울려요.<br>자신감과 강한 에너지로 새로운 영역에 도전하는 모습이 닮았답니다.",
+        compatibility: "INTJ — 아이디어와 전략이 만나 강력한 조합을 만들어요."
+      },
+
+      ESTJ: {
+        pokemon: "🦁",
+        name: "윈디",
+        reason: "책임감이 강하고 목표를 확실하게 추진하는 ESTJ와 윈디가 잘 어울려요.<br>든든하고 믿음직하면서도 행동력이 강한 모습이 닮았어요.",
+        compatibility: "ISFP — 현실적인 추진력과 감성적인 시각이 서로를 보완해요."
+      },
+
+      ESFJ: {
+        pokemon: "💗",
+        name: "토게키스",
+        reason: "사람들을 챙기고 따뜻한 분위기를 만드는 ESFJ에게 토게키스가 잘 어울려요.<br>평화와 행복을 주변에 나누는 듯한 이미지가 ESFJ와 닮았어요.",
+        compatibility: "ISTP — 서로 다른 강점으로 균형을 만들어줘요."
+      },
+
+      ENFJ: {
+        pokemon: "🌟",
+        name: "루카리오",
+        reason: "사람을 이끌고 주변을 응원하는 ENFJ에게 루카리오가 잘 어울려요.<br>강한 신념과 동료를 소중하게 생각하는 모습이 ENFJ와 닮았답니다.",
+        compatibility: "INFP — 서로의 가치관과 감성을 깊게 이해할 수 있어요."
+      },
+
+      ENTJ: {
+        pokemon: "🐲",
+        name: "보만다",
+        reason: "목표를 세우고 적극적으로 추진하는 ENTJ에게 보만다가 잘 어울려요.<br>강한 의지와 자신감으로 앞으로 나아가는 모습이 ENTJ와 닮았어요.",
+        compatibility: "INTP — 전략과 새로운 아이디어가 만나 좋은 시너지를 만들어요."
+      }
+
+    };
+
+
+    function showResult(mbti) {
+
+      const data = pokemonData[mbti];
+
+      document.getElementById("selection").style.display = "none";
+
+      const result = document.getElementById("result");
+      result.classList.add("show");
+
+      document.getElementById("resultMbti").textContent =
+        mbti + "에게 어울리는 포켓몬";
+
+      document.getElementById("pokemonEmoji").textContent =
+        data.pokemon;
+
+      document.getElementById("pokemonName").textContent =
+        data.name;
+
+      document.getElementById("reason").innerHTML =
+        data.reason;
+
+      document.getElementById("compatibility").textContent =
+        data.compatibility;
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+
+
+    function resetPage() {
+
+      document.getElementById("result").classList.remove("show");
+
+      document.getElementById("selection").style.display = "block";
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+
+  </script>
+
+</body>
+</html>
